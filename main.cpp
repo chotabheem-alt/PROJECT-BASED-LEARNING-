@@ -3,145 +3,161 @@
 #include <vector>
 #include <queue>
 #include <string>
+
 using namespace std;
 
-class Equipment {
+class Equipment
+{
 public:
     string id;
     string type;
-    int usageHours;
-    int failures;
-    int condition;
-    int temperature;
-    int maintenanceDays;
-    int riskScore;
 
-    Equipment(string i, string t, int u, int f, int c, int temp, int days) {
+    int usage;
+    int failure;
+    int condition;
+    int temp;
+    int days;
+    int risk;
+
+    Equipment(string i, string t, int u, int f, int c, int te, int d)
+    {
         id = i;
         type = t;
-        usageHours = u;
-        failures = f;
+        usage = u;
+        failure = f;
         condition = c;
-        temperature = temp;
-        maintenanceDays = days;
-        riskScore = 0;
+        temp = te;
+        days = d;
+        risk = 0;
     }
 
-    void calculateRisk() {
-        riskScore = (usageHours / 20)
-                  + (failures * 10)
-                  + (condition * 10)
-                  + (temperature / 5)
-                  + (maintenanceDays / 5);
+    void calculateRisk()
+    {
+        risk = usage / 20;
+        risk = risk + failure * 10;
+        risk = risk + condition * 10;
+        risk = risk + temp / 5;
+        risk = risk + days / 5;
     }
 
-    void display() {
-        cout << "\n-------------------------";
-        cout << "\nEquipment ID: " << id;
+    void display()
+    {
+        cout << "\n----------------------";
+        cout << "\nID: " << id;
         cout << "\nType: " << type;
-        cout << "\nUsage Hours: " << usageHours;
-        cout << "\nPrevious Failures: " << failures;
-        cout << "\nCondition: " << condition;
-        cout << "\nTemperature: " << temperature;
-        cout << "\nMaintenance Days: " << maintenanceDays;
-        cout << "\nRisk Score: " << riskScore;
+        cout << "\nUsage Hours: " << usage;
+        cout << "\nFailures: " << failure;
 
-        if (riskScore >= 120)
-            cout << "\nStatus: CRITICAL";
-        else if (riskScore >= 80)
-            cout << "\nStatus: HIGH";
-        else if (riskScore >= 40)
-            cout << "\nStatus: MEDIUM";
+        cout << "\nCondition: ";
+
+        if (condition == 1)
+            cout << "Good";
+        else if (condition == 2)
+            cout << "Average";
         else
-            cout << "\nStatus: LOW";
+            cout << "Poor";
 
-        cout << "\n-------------------------\n";
+        cout << "\nTemperature: " << temp;
+        cout << "\nMaintenance Days: " << days;
+        cout << "\nRisk Score: " << risk;
+
+        cout << "\nStatus: ";
+
+        if (risk >= 120)
+            cout << "Critical";
+        else if (risk >= 80)
+            cout << "High";
+        else if (risk >= 40)
+            cout << "Medium";
+        else
+            cout << "Low";
+
+        cout << "\n----------------------\n";
     }
 };
 
-struct CompareRisk {
-    bool operator()(Equipment a, Equipment b) {
-        return a.riskScore < b.riskScore;
-    }
-};
 
-class MaintenanceSystem {
-private:
-    vector<Equipment> equipmentList;
-
+class MaintenanceSystem
+{
 public:
+    vector<Equipment> list;
 
-    // FUNCTION 1: ADD EQUIPMENT
-    void addEquipment() {
 
-        string id, type;
-        int usage, failures, condition;
-        int temperature, days;
+    void add()
+    {
+        string id;
+        string type;
 
-        cout << "\nEnter Equipment ID: ";
+        int usage;
+        int failure;
+        int condition;
+        int temp;
+        int days;
+
+        cout << "\nEnter ID: ";
         cin >> id;
 
-        cout << "Enter Equipment Type: ";
+        cout << "Enter Type: ";
         cin >> type;
 
         cout << "Enter Usage Hours: ";
         cin >> usage;
 
         cout << "Enter Previous Failures: ";
-        cin >> failures;
+        cin >> failure;
 
-        cout << "Enter Condition (1-Good, 2-Average, 3-Poor): ";
+        cout << "\nCondition";
+        cout << "\n1. Good";
+        cout << "\n2. Average";
+        cout << "\n3. Poor";
+        cout << "\nEnter choice: ";
         cin >> condition;
 
         cout << "Enter Temperature: ";
-        cin >> temperature;
+        cin >> temp;
 
-        cout << "Enter Days Since Last Maintenance: ";
+        cout << "Enter Maintenance Days: ";
         cin >> days;
 
-        Equipment e(id, type, usage, failures,
-                    condition, temperature, days);
+        Equipment e(id, type, usage, failure,
+                    condition, temp, days);
 
         e.calculateRisk();
 
-        equipmentList.push_back(e);
+        list.push_back(e);
 
-        cout << "\nEquipment added successfully!\n";
+        cout << "\nEquipment added.\n";
     }
 
 
-    // FUNCTION 2: DISPLAY ALL
-    void displayAll() {
-
-        if (equipmentList.empty()) {
-            cout << "\nNo equipment available.\n";
+    void display()
+    {
+        if (list.size() == 0)
+        {
+            cout << "\nNo equipment found.\n";
             return;
         }
 
-        cout << "\n========== ALL EQUIPMENT ==========\n";
-
-        for (int i = 0; i < equipmentList.size(); i++) {
-            equipmentList[i].display();
+        for (int i = 0; i < list.size(); i++)
+        {
+            list[i].display();
         }
     }
 
 
-    // FUNCTION 3: SEARCH EQUIPMENT
-    void searchEquipment() {
-
+    void search()
+    {
         string id;
 
-        cout << "\nEnter Equipment ID: ";
+        cout << "\nEnter ID to search: ";
         cin >> id;
 
-        for (int i = 0; i < equipmentList.size(); i++) {
-
-            if (equipmentList[i].id == id) {
-
-                cout << "\nEquipment Found!\n";
-
-                equipmentList[i].display();
-
+        for (int i = 0; i < list.size(); i++)
+        {
+            if (list[i].id == id)
+            {
+                cout << "\nEquipment found.";
+                list[i].display();
                 return;
             }
         }
@@ -150,34 +166,32 @@ public:
     }
 
 
-    // FUNCTION 4: UPDATE EQUIPMENT
-    void updateEquipment() {
-
+    void update()
+    {
         string id;
 
-        cout << "\nEnter Equipment ID to update: ";
+        cout << "\nEnter ID to update: ";
         cin >> id;
 
-        for (int i = 0; i < equipmentList.size(); i++) {
+        for (int i = 0; i < list.size(); i++)
+        {
+            if (list[i].id == id)
+            {
+                cout << "\nEnter new usage hours: ";
+                cin >> list[i].usage;
 
-            if (equipmentList[i].id == id) {
+                cout << "Enter new temperature: ";
+                cin >> list[i].temp;
 
-                cout << "\nEnter New Usage Hours: ";
-                cin >> equipmentList[i].usageHours;
+                cout << "Enter new condition (1-Good, 2-Average, 3-Poor): ";
+                cin >> list[i].condition;
 
-                cout << "Enter New Temperature: ";
-                cin >> equipmentList[i].temperature;
+                cout << "Enter new maintenance days: ";
+                cin >> list[i].days;
 
-                cout << "Enter New Condition: ";
-                cin >> equipmentList[i].condition;
+                list[i].calculateRisk();
 
-                cout << "Enter New Maintenance Days: ";
-                cin >> equipmentList[i].maintenanceDays;
-
-                equipmentList[i].calculateRisk();
-
-                cout << "\nEquipment updated successfully!\n";
-
+                cout << "\nUpdated successfully.\n";
                 return;
             }
         }
@@ -187,48 +201,48 @@ public:
 };
 
 
-int main() {
+int main()
+{
+    MaintenanceSystem m;
 
-    MaintenanceSystem system;
+    int ch;
 
-    int choice;
-
-    while (true) {
-
-        cout << "\n\n===== INDUSTRIAL EQUIPMENT SYSTEM =====";
-        cout << "\n1. Add Equipment";
-        cout << "\n2. Display All Equipment";
-        cout << "\n3. Search Equipment";
-        cout << "\n4. Update Equipment";
+    while (1)
+    {
+        cout << "\n\n===== EQUIPMENT SYSTEM =====";
+        cout << "\n1. Add";
+        cout << "\n2. Display";
+        cout << "\n3. Search";
+        cout << "\n4. Update";
         cout << "\n0. Exit";
 
-        cout << "\n\nEnter choice: ";
-        cin >> choice;
+        cout << "\nEnter choice: ";
+        cin >> ch;
 
-        switch (choice) {
-
-        case 1:
-            system.addEquipment();
+        if (ch == 1)
+        {
+            m.add();
+        }
+        else if (ch == 2)
+        {
+            m.display();
+        }
+        else if (ch == 3)
+        {
+            m.search();
+        }
+        else if (ch == 4)
+        {
+            m.update();
+        }
+        else if (ch == 0)
+        {
+            cout << "\nProgram ended.";
             break;
-
-        case 2:
-            system.displayAll();
-            break;
-
-        case 3:
-            system.searchEquipment();
-            break;
-
-        case 4:
-            system.updateEquipment();
-            break;
-
-        case 0:
-            cout << "\nProgram ended.\n";
-            return 0;
-
-        default:
-            cout << "\nInvalid choice.\n";
+        }
+        else
+        {
+            cout << "\nWrong choice.";
         }
     }
 
